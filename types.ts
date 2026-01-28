@@ -8,7 +8,7 @@ export interface Word {
   french: string;
   english: string;
   gender: Gender;
-  category: 'Common' | 'Home' | 'Work' | 'Skiing';
+  category: 'Common' | 'Home' | 'Work' | 'Skiing' | 'Exceptions';
   example?: string;
 }
 

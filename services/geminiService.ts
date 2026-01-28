@@ -13,10 +13,14 @@ export const getWordExplanation = async (word: Word): Promise<string> => {
     const genderStr = word.gender === Gender.Masculine ? 'masculine' : 'feminine';
     const prompt = `
       The French word "${word.french}" (${word.english}) is ${genderStr}. 
-      Explain briefly why it has this gender (if there's a rule or pattern, e.g. ending in -e, -tion) 
-      or provide a very short mnemonic to help remember it. 
-      Then provide one simple French sentence using the word correctly with its article.
-      Keep it under 60 words total.
+      Explain briefly why it has this gender (if there's a rule, pattern, or ending like -e, -tion) 
+      or provide a very short mnemonic. 
+      Then provide one simple French sentence using the word correctly.
+      
+      Formatting rules:
+      - Use **bold** for the French word and key grammar terms.
+      - Use *italics* for the example sentence.
+      - Keep it under 50 words.
     `;
 
     const response = await ai.models.generateContent({

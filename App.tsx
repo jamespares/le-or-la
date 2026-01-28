@@ -107,17 +107,25 @@ const App: React.FC = () => {
           <i className="fas fa-chevron-right opacity-50 group-hover:opacity-100 transition-opacity"></i>
         </button>
 
-        <div className="grid grid-cols-3 gap-3">
-          {['Home', 'Work', 'Skiing'].map(cat => (
-             <button 
-              key={cat}
-              onClick={() => startQuiz(cat)}
-              className="bg-white border border-slate-200 text-slate-700 p-4 rounded-xl font-semibold hover:border-indigo-500 hover:text-indigo-600 transition-all flex flex-col items-center justify-center text-sm shadow-sm"
-            >
-              <i className={`fas fa-${cat === 'Home' ? 'home' : cat === 'Work' ? 'briefcase' : 'snowflake'} mb-2 text-xl`}></i>
-              {cat}
-            </button>
-          ))}
+        <div className="grid grid-cols-2 gap-3">
+          {['Home', 'Work', 'Skiing', 'Exceptions'].map(cat => {
+            let icon = 'question';
+            if (cat === 'Home') icon = 'home';
+            else if (cat === 'Work') icon = 'briefcase';
+            else if (cat === 'Skiing') icon = 'snowflake';
+            else if (cat === 'Exceptions') icon = 'exclamation-triangle';
+
+            return (
+              <button 
+                key={cat}
+                onClick={() => startQuiz(cat)}
+                className={`bg-white border border-slate-200 text-slate-700 p-4 rounded-xl font-semibold hover:border-indigo-500 hover:text-indigo-600 transition-all flex flex-col items-center justify-center text-sm shadow-sm ${cat === 'Exceptions' ? 'text-amber-600 hover:text-amber-700 hover:border-amber-400' : ''}`}
+              >
+                <i className={`fas fa-${icon} mb-2 text-xl`}></i>
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
         {incorrectIds.length > 0 && (

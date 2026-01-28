@@ -8,6 +8,26 @@ interface FlashcardProps {
   isReviewMode?: boolean;
 }
 
+// Simple formatter to parse **bold** and *italic* markdown from Gemini
+const formatAIResponse = (text: string) => {
+  if (!text) return null;
+  
+  // Split by bold (**...**) first
+  return text.split(/(\*\*.*?\*\*)/g).map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-bold text-slate-900 bg-indigo-50 px-1 rounded">{part.slice(2, -2)}</strong>;
+    }
+    
+    // Split remaining parts by italic (*...*)
+    return part.split(/(\*.*?\*)/g).map((subPart, j) => {
+      if (subPart.startsWith('*') && subPart.endsWith('*') && subPart.length > 2) {
+         return <em key={`${i}-${j}`} className="italic text-slate-800">{subPart.slice(1, -1)}</em>;
+      }
+      return <span key={`${i}-${j}`}>{subPart}</span>;
+    });
+  });
+};
+
 export const Flashcard: React.FC<FlashcardProps> = ({ word, onAnswer, isReviewMode = false }) => {
   const [flipped, setFlipped] = useState(false);
   const [selectedGender, setSelectedGender] = useState<Gender | null>(null);
@@ -45,7 +65,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ word, onAnswer, isReviewMo
   };
 
   return (
-    <div className="w-full max-w-md mx-auto perspective-1000 h-[500px]">
+    <div className="w-full max-w-md mx-auto perspective-1000 h-[550px]">
       <div 
         className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${flipped ? 'rotate-y-180' : ''}`}
       >
@@ -83,7 +103,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ word, onAnswer, isReviewMo
         <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-2xl shadow-xl border border-slate-200 p-8 flex flex-col justify-between overflow-hidden">
            <div className={`absolute top-0 left-0 w-full h-2 ${word.gender === Gender.Masculine ? 'bg-blue-500' : 'bg-rose-500'}`}></div>
            
-           <div className="mt-4 text-center">
+           <div className="mt-4 text-center flex-1 flex flex-col">
               <div className="mb-4">
                 {isCorrect ? (
                   <span className="inline-block p-3 rounded-full bg-green-100 text-green-600 text-2xl">
@@ -105,7 +125,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ word, onAnswer, isReviewMo
               {!explanation && !loadingExplanation && (
                  <button 
                    onClick={fetchExplanation}
-                   className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center justify-center mx-auto space-x-2"
+                   className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center justify-center mx-auto space-x-2 mt-auto mb-auto"
                  >
                    <i className="fas fa-sparkles"></i>
                    <span>Why? Ask AI</span>
@@ -113,21 +133,26 @@ export const Flashcard: React.FC<FlashcardProps> = ({ word, onAnswer, isReviewMo
               )}
 
               {loadingExplanation && (
-                <div className="text-slate-400 text-sm animate-pulse">
+                <div className="text-slate-400 text-sm animate-pulse mt-auto mb-auto">
                    Asking Gemini...
                 </div>
               )}
 
               {explanation && (
-                <div className="mt-2 p-4 bg-slate-50 rounded-lg text-left text-sm text-slate-700 leading-relaxed border border-slate-100 shadow-inner max-h-[120px] overflow-y-auto">
-                  <p><i className="fas fa-robot text-indigo-400 mr-2"></i>{explanation}</p>
+                <div className="mt-2 p-4 bg-slate-50 rounded-lg text-left text-sm text-slate-600 leading-relaxed border border-slate-100 shadow-inner max-h-[160px] overflow-y-auto">
+                  <div className="flex gap-3">
+                    <i className="fas fa-robot text-indigo-400 mt-1 flex-shrink-0"></i>
+                    <div>
+                      {formatAIResponse(explanation)}
+                    </div>
+                  </div>
                 </div>
               )}
            </div>
 
            <button 
              onClick={handleNext}
-             className="w-full py-4 rounded-xl bg-slate-900 text-white font-bold text-lg hover:bg-slate-800 transition-colors shadow-lg flex items-center justify-center space-x-2"
+             className="w-full py-4 mt-4 rounded-xl bg-slate-900 text-white font-bold text-lg hover:bg-slate-800 transition-colors shadow-lg flex items-center justify-center space-x-2 flex-shrink-0"
            >
              <span>Next Word</span>
              <i className="fas fa-arrow-right"></i>
